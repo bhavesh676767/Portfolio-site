@@ -21,12 +21,12 @@ type Particle = {
 function starColor(tint: ParticleTint, isDark: boolean, opacity: number): string {
   if (tint === "gold") {
     return isDark
-      ? `rgba(255, 214, 140, ${opacity})`
-      : `rgba(198, 162, 88, ${opacity})`;
+      ? `rgba(255, 218, 150, ${opacity})`
+      : `rgba(176, 142, 72, ${opacity})`;
   }
   return isDark
-    ? `rgba(228, 226, 220, ${opacity})`
-    : `rgba(195, 193, 188, ${opacity})`;
+    ? `rgba(235, 232, 225, ${opacity})`
+    : `rgba(155, 150, 142, ${opacity})`;
 }
 
 export default function ParticleField() {
@@ -87,15 +87,15 @@ export default function ParticleField() {
           baseY,
           x: baseX,
           y: baseY,
-          size: Math.random() * 0.55 + 0.35,
+          size: Math.random() * 0.5 + 0.65,
           drift: Math.random() * 0.45 + 0.15,
           phase: Math.random() * Math.PI * 2,
           speed: Math.random() * 0.0012 + 0.00055,
           orbit: Math.random() * 7 + 4,
           tint: isGold ? "gold" : "gray",
           opacity: isGold
-            ? Math.random() * 0.18 + 0.22
-            : Math.random() * 0.22 + 0.18,
+            ? Math.random() * 0.2 + 0.48
+            : Math.random() * 0.18 + 0.42,
         });
       }
     };
@@ -134,7 +134,7 @@ export default function ParticleField() {
         particle.y += (targetY - particle.y) * 0.14;
 
         const twinkle =
-          0.85 + Math.sin(time * 0.0022 + particle.phase) * 0.15;
+          0.92 + Math.sin(time * 0.0022 + particle.phase) * 0.08;
         ctx.fillStyle = starColor(
           particle.tint,
           isDark,
