@@ -61,8 +61,8 @@ body {
 }
 
 [data-theme="dark"] .particle-field {
-  opacity: 0.28;
-  filter: invert(1);
+  opacity: 1;
+  filter: none;
 }
 
 /* ── Paper grain noise overlay ────────────────── */

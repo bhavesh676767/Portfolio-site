@@ -90,9 +90,17 @@ export default function ParticleField() {
       pointer.y = -9999;
     };
 
+    const getStarFill = () => {
+      const isDark =
+        document.documentElement.getAttribute("data-theme") === "dark";
+      return isDark
+        ? "rgba(255, 255, 255, 0.28)"
+        : "rgba(17, 17, 17, 0.28)";
+    };
+
     const draw = (time: number) => {
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = "rgba(17, 17, 17, 0.72)";
+      ctx.fillStyle = getStarFill();
 
       particles.forEach((particle) => {
         const dx = particle.baseX - pointer.x;
