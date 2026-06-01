@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
+type ParticleTint = "gray" | "gold";
+
 type Particle = {
   baseX: number;
   baseY: number;
@@ -12,7 +14,20 @@ type Particle = {
   phase: number;
   speed: number;
   orbit: number;
+  tint: ParticleTint;
+  opacity: number;
 };
+
+function starColor(tint: ParticleTint, isDark: boolean, opacity: number): string {
+  if (tint === "gold") {
+    return isDark
+      ? `rgba(255, 214, 140, ${opacity})`
+      : `rgba(198, 162, 88, ${opacity})`;
+  }
+  return isDark
+    ? `rgba(228, 226, 220, ${opacity})`
+    : `rgba(195, 193, 188, ${opacity})`;
+}
 
 export default function ParticleField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -40,7 +55,7 @@ export default function ParticleField() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       particles.length = 0;
-      const count = Math.min(150, Math.max(78, Math.floor((width * height) / 7800)));
+      const count = Math.min(165, Math.max(88, Math.floor((width * height) / 7200)));
       const exclusion = {
         x: width / 2,
         y: height * 0.6,
@@ -65,16 +80,22 @@ export default function ParticleField() {
           attempts += 1;
         }
 
+        const isGold = Math.random() < 0.18;
+
         particles.push({
           baseX,
           baseY,
           x: baseX,
           y: baseY,
-          size: Math.random() * 1.7 + 1.05,
-          drift: Math.random() * 0.7 + 0.25,
+          size: Math.random() * 0.55 + 0.35,
+          drift: Math.random() * 0.45 + 0.15,
           phase: Math.random() * Math.PI * 2,
           speed: Math.random() * 0.0012 + 0.00055,
-          orbit: Math.random() * 10 + 6,
+          orbit: Math.random() * 7 + 4,
+          tint: isGold ? "gold" : "gray",
+          opacity: isGold
+            ? Math.random() * 0.18 + 0.22
+            : Math.random() * 0.22 + 0.18,
         });
       }
     };
@@ -90,17 +111,10 @@ export default function ParticleField() {
       pointer.y = -9999;
     };
 
-    const getStarFill = () => {
-      const isDark =
-        document.documentElement.getAttribute("data-theme") === "dark";
-      return isDark
-        ? "rgba(255, 255, 255, 0.28)"
-        : "rgba(17, 17, 17, 0.28)";
-    };
-
     const draw = (time: number) => {
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = getStarFill();
+      const isDark =
+        document.documentElement.getAttribute("data-theme") === "dark";
 
       particles.forEach((particle) => {
         const dx = particle.baseX - pointer.x;
@@ -119,6 +133,13 @@ export default function ParticleField() {
         particle.x += (targetX - particle.x) * 0.14;
         particle.y += (targetY - particle.y) * 0.14;
 
+        const twinkle =
+          0.85 + Math.sin(time * 0.0022 + particle.phase) * 0.15;
+        ctx.fillStyle = starColor(
+          particle.tint,
+          isDark,
+          particle.opacity * twinkle
+        );
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fill();
@@ -142,4 +163,4 @@ export default function ParticleField() {
   }, []);
 
   return <canvas ref={canvasRef} className="particle-field" aria-hidden="true" />;
-}
+};
