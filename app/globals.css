@@ -1,0 +1,1071 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Caveat:wght@700&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.cdnfonts.com/css/gveret-levin');
+@import url('https://fonts.cdnfonts.com/css/satoshi');
+
+:root {
+  --bg: #f5f5f0;
+  --text: #111111;
+  --accent: #FF2200;
+  --selection: #4169E1;
+  
+  --font-display: 'Instrument Sans', sans-serif;
+  --font-gveret: 'Gveret Levin', 'Caveat', cursive;
+  --font-space-mono: 'Space Mono', monospace;
+  --font-inter: 'Inter', 'Satoshi', sans-serif;
+}
+
+[data-theme="dark"] {
+  --bg: #111111;
+  --text: #ffffff;
+}
+
+/* ── Reset & Base Styles ──────────────────────── */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-inter);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  position: relative;
+}
+
+/* ── Inset Dotted Rectangular Border Frame ──────── */
+.page-border {
+  position: relative;
+  margin: 10px 12px 12px 12px;  /* sits below ticker, inset on sides/bottom */
+  border: 1.5px dashed #bbb;
+  height: calc(100vh - 30px - 22px);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] .page-border {
+  border-color: #444;
+}
+
+.particle-field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .particle-field {
+  opacity: 0.28;
+  filter: invert(1);
+}
+
+/* ── Paper grain noise overlay ────────────────── */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+
+/* ── Tech Marquee (Classic left -> right) ─────── */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
+
+.marquee-container {
+  width: 100%;
+  height: 30px;
+  background-color: #111111;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 100;
+  border-bottom: none;
+}
+
+.marquee-inner {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 25s linear infinite;
+  gap: 6px;
+  padding-left: 6px;
+}
+
+.marquee-pill {
+  display: inline-block;
+  font-family: var(--font-space-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 3px;
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+
+/* ── Orbit Dashed Ellipse SVG ─────────────────── */
+.orbit-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.calendar {
+  width: 120px;
+  border: 2.5px solid #111;
+  border-radius: 10px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 4px 4px 0px rgba(17, 17, 17, 0.42);
+}
+
+.cal-header {
+  background: #111;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+  padding: 6px 0;
+}
+
+.cal-body {
+  padding: 8px;
+  background: white;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  padding: 6px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ccc;
+}
+
+.dot.today {
+  background: #FF1A00;
+  box-shadow: 0 0 3px #FF1A00;  /* subtle glow so it reads clearly */
+}
+
+.dot.empty {
+  background: transparent;
+}
+
+/* ── Dark/Light Mode Pill Toggle (hidden) ────── */
+.toggle {
+  display: none;
+}
+
+/* ── Social Icons Top Right Positioning ───────── */
+.social-icons {
+  position: absolute;
+  top: 48px;
+  right: 32px;          /* was top-left, now top-right */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tog-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 18px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: #999;
+  transition: background 0.15s, color 0.15s;
+}
+
+.tog-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #bbb;
+  display: inline-block;
+  transition: background 0.15s;
+}
+
+/* Active dark */
+.tog-dark.active {
+  background: #111;
+  color: #fff;
+  border-radius: 999px 0 0 999px;
+}
+.tog-dark.active .tog-dot {
+  background: #fff;
+}
+
+/* Active light */
+.tog-light.active {
+  background: white;
+  color: #111;
+  border-radius: 0 999px 999px 0;
+}
+.tog-light.active .tog-dot {
+  background: #F97316;    /* orange dot */
+}
+
+/* Inactive states */
+.tog-dark:not(.active) { color: #999; }
+.tog-dark:not(.active) .tog-dot { background: #bbb; }
+
+.tog-light:not(.active) { color: #999; }
+.tog-light:not(.active) .tog-dot { background: #bbb; }
+
+/* Hover */
+.tog-btn:hover { opacity: 0.75; }
+
+/* ── Neo-Brutalist Navigation Links ──────────────── */
+.nav-link {
+  position: relative;
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.28rem;
+  font-weight: 700;
+  color: #111;
+  padding: 4px 9px;
+  
+  background: rgba(65, 105, 225, 0.12);
+  border: 0;
+  border-left: 3px solid #4169E1;
+  border-right: 3px solid #4169E1;
+  box-shadow: 0 2px 0 rgba(65, 105, 225, 0.35);
+  cursor: pointer;
+  text-decoration: none;
+  letter-spacing: 0;
+  line-height: 1.05;
+  transition: background 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+/* Blue corner dots */
+.nav-link::before {
+  content: '';
+  position: absolute;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: #4169E1;
+  top: -6px; left: -6px;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: #4169E1;
+  bottom: -6px; right: -6px;
+}
+
+/* Blinking cursor */
+.nav-link .cursor {
+  display: none;
+  width: 2px;
+  height: 1em;
+  background: #4169E1;
+  margin-right: 3px;
+  vertical-align: middle;
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Hover — strip everything, clean underline */
+.nav-link:hover {
+  background: rgba(65, 105, 225, 0.2);
+  box-shadow: 0 4px 0 rgba(65, 105, 225, 0.45);
+  transform: translateY(-2px);
+}
+
+.nav-link:active {
+  background: rgba(65, 105, 225, 0.24);
+  box-shadow: 0 1px 0 rgba(65, 105, 225, 0.45);
+  transform: translateY(1px);
+}
+
+/* ── "MY STORY" Windows 95 Retro Button ───────── */
+.retro-btn {
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-bottom: 2px solid #555555;
+  border-right: 2px solid #555555;
+  box-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+  color: #111111;
+  font-family: var(--font-space-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  outline: none;
+}
+
+.retro-btn:active {
+  border-top: 2px solid #555555;
+  border-left: 2px solid #555555;
+  border-bottom: 2px solid #ffffff;
+  border-right: 2px solid #ffffff;
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+/* ── 3D Physical "My Story" Button ────────────── */
+.d3warpper {
+  position: absolute;
+  top: 28%;           /* sits inside the top of the ellipse */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  transform-style: preserve-3d;
+  perspective: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  scale: 1;
+}
+
+.cover {
+  background-color: rgb(0, 0, 0);
+  height: 48px;
+  width: 140px;
+  border-radius: 8px;
+  transform: rotateX(7deg);
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 9px;
+  box-shadow: 0px 1px 1px 1px rgba(255, 255, 255, 0.4);
+}
+
+.my-story-3d-btn {
+  cursor: pointer;
+  border: none;
+  border-bottom: 2px solid white;
+  background-color: rgb(221, 221, 221);
+  box-shadow: 0px 4px 0px 0.2px rgb(116, 116, 116);
+  height: 44px;
+  width: 134px;
+  border-radius: 6px;
+  transform: rotateX(7deg);
+  z-index: 2;
+  position: absolute;
+  transition: 80ms;
+  color: rgb(0, 0, 0, 0.7);
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.my-story-3d-btn:active {
+  box-shadow: 0px 4px 0px 0.2px rgba(116, 116, 116, 0);
+  transform: rotateX(7deg) translateY(4.5px);
+  transition: 80ms;
+}
+
+/* 3D Button Dark Mode theme styling */
+[data-theme="dark"] .cover {
+  background-color: #ffffff;
+  box-shadow: 0px 1px 2px 1px rgba(255, 255, 255, 0.35);
+}
+
+[data-theme="dark"] .my-story-3d-btn {
+  background-color: #111;
+  color: #ffffff;
+  border-bottom: 2px solid #111;
+  box-shadow: 0px 4px 0px 0.2px #ffffff;
+}
+
+[data-theme="dark"] .my-story-3d-btn:active {
+  box-shadow: 0px 4px 0px 0.2px rgba(255, 255, 255, 0);
+}
+
+/* ── Social Icons Hover Effects ──────────────── */
+.social-icon-link {
+  transition: transform 0.15s ease;
+}
+
+.social-icon-link:hover {
+  transform: scale(1.08);
+}
+
+/* ── Footer Location & Contact (Brutalist style) ── */
+.location {
+  font-family: var(--font-inter);
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+.contact {
+  font-family: var(--font-inter);
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border-bottom: 1.5px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.contact:hover {
+  border-bottom-color: var(--text);
+}
+
+/* ── CUSTOM FIXED OVERRIDES (Theme Overrides & Positioning) ── */
+
+/* FIX 1 — NAV LINKS in Dark Mode */
+[data-theme="dark"] .nav-link {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1.5px solid #ffffff;
+  box-shadow: 2px 2px 0px #ffffff;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .nav-link::before,
+[data-theme="dark"] .nav-link::after {
+  background: #ffffff;
+}
+
+[data-theme="dark"] .nav-link .cursor {
+  background: #ffffff;
+}
+
+/* FIX 3 — CALENDAR in Dark Mode (glow white pop) */
+[data-theme="dark"] .calendar {
+  background: #ffffff;
+  border: 3px solid #ffffff;
+  box-shadow: 5px 5px 0px rgba(255, 255, 255, 0.42);
+  border-radius: 10px;
+}
+
+[data-theme="dark"] .cal-header {
+  background: #111;
+  color: #ffffff;
+  border-bottom: 2px solid #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+[data-theme="dark"] .dot {
+  background: #777;
+}
+
+[data-theme="dark"] .dot.today {
+  background: #FF1A00;
+}
+
+/* FIX 4 — TOGGLE in Dark Mode (punchy white shadow) */
+[data-theme="dark"] .toggle {
+  border: 2.5px solid #ffffff;
+  box-shadow: 4px 4px 0px #ffffff;   /* white hard shadow — punchy */
+  background: #111;
+}
+
+[data-theme="dark"] .tog-btn {
+  color: #666;
+}
+
+[data-theme="dark"] .tog-dark.active {
+  background: #ffffff;
+  color: #111;
+  font-weight: 800;
+  border-radius: 999px 0 0 999px;
+}
+
+[data-theme="dark"] .tog-dark.active .tog-dot {
+  background: #111;
+}
+
+[data-theme="dark"] .tog-light.active {
+  background: #111;
+  color: #ffffff;
+  font-weight: 800;
+  border-radius: 0 999px 999px 0;
+}
+
+[data-theme="dark"] .tog-light.active .tog-dot {
+  background: #F97316;
+}
+
+/* FIX 5 — GURGAON, INDIA + CONTACT in Dark Mode */
+[data-theme="dark"] .location,
+[data-theme="dark"] .contact {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  border-bottom: 1.5px solid #ffffff;   /* raw underline */
+  padding-bottom: 1px;
+}
+
+/* NAV LINK POSITIONING (sits perfectly on circumference) */
+.nav-link-wrap {
+  position: absolute;
+  z-index: 30; /* Keep it clickable above the Character Canvas (z-index 5) */
+}
+
+/* projects — left side, upper */
+.link-projects {
+  top: 36%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+}
+
+/* Design — left side, lower */
+.link-design {
+  top: 68%;
+  left: 24%;
+  transform: translate(-50%, -50%);
+}
+
+/* Social work — right side, upper */
+.link-social {
+  top: 36%;
+  right: 28%;
+  transform: translate(50%, -50%);
+}
+
+/* My aspirations — right side, lower */
+.link-aspirations {
+  top: 68%;
+  right: 22%;
+  transform: translate(50%, -50%);
+}
+
+/* ── Brand Heading Sizing ─────────────────────── */
+.brand-subheading {
+  font-family: var(--font-gveret);
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1;
+  transform: rotate(-4deg);
+  margin-bottom: 8px;
+}
+
+.brand-heading {
+  font-family: var(--font-display);
+  font-size: 6.5rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--text);
+  line-height: 0.85;
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .brand-subheading {
+    font-size: 1.8rem;
+  }
+  
+  .brand-heading {
+    font-size: 4.2rem; /* scaled down for tablet view to fit perfectly */
+  }
+}
+
+@media (max-width: 640px) {
+  .brand-subheading {
+    font-size: 1.5rem;
+  }
+  
+  .brand-heading {
+    font-size: 3.2rem; /* scaled down for mobile view */
+  }
+}
+
+/* ── TOP BAR & UTILITIES (Universal Base styles) ── */
+.top-bar {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+.calendar-wrap {
+  position: absolute;
+  top: 48px;
+  left: 32px;
+  z-index: 20;
+}
+
+.brand-heading-wrap {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 20;
+}
+
+.social-icons {
+  position: absolute;
+  top: 48px;
+  right: 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 20;
+}
+
+.social-icons img {
+  width: 42px;
+  height: 42px;
+}
+
+/* Ellipse defaults */
+.desktop-only-ellipse {
+  display: block;
+}
+
+.tablet-only-ellipse {
+  display: none;
+}
+
+.mobile-only-ellipse {
+  display: none;
+}
+
+/* ── TABLET SPECIFIC LAYOUT OVERRIDES (min-width: 641px and max-width: 1024px) ── */
+@media (min-width: 641px) and (max-width: 1024px) {
+
+  /* ── Page border — relative container for all absolute children ── */
+  .page-border {
+    position: relative !important;
+    margin: 10px 12px 0 12px !important;
+    border: 1.5px dashed #bbb !important;
+    min-height: 900px !important;
+    height: calc(100vh - 30px - 10px) !important;
+    overflow: hidden !important;   /* clips avatar bleed cleanly */
+  }
+
+  /* ── Layout restructure ── */
+  .top-bar {
+    display: flex !important;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 16px 20px;
+    position: relative;
+    width: 100%;
+  }
+
+  .calendar-wrap {
+    position: relative !important;
+    top: unset !important;
+    left: unset !important;
+    z-index: 10 !important;
+  }
+
+  .brand-heading-wrap {
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    top: 16px !important;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10 !important;
+  }
+
+  .top-right-placeholder {
+    display: none !important;
+  }
+
+  /* ── FIX 1 — Social icons hard-locked to top-center, never near avatar ── */
+  .social-icons {
+    position: absolute !important;
+    top: 210px !important;           /* always below name, never near avatar */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    gap: 18px !important;
+    z-index: 10 !important;
+    /* CRITICAL — remove any margin/bottom positioning */
+    bottom: unset !important;
+    right: unset !important;
+    margin: 0 !important;
+  }
+
+  .social-icons img {
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 14px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* ── FIX 2 — Ellipse: very wide, flat oval in lower portion ── */
+  .desktop-only-ellipse {
+    display: none !important;
+  }
+
+  .tablet-only-ellipse {
+    display: block !important;
+  }
+
+  .orbit-svg {
+    position: absolute !important;
+    top: 415px !important;           /* starts well below social icons */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 95vw !important;
+    max-width: 720px !important;
+    height: auto !important;
+    pointer-events: none;
+    z-index: 0 !important;
+  }
+
+  /* ── FIX 3 — MY STORY button at top center of ellipse arc ── */
+  .d3warpper {
+    top: 408px !important;           /* 7px above ellipse top edge */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 2 !important;
+  }
+
+  /* ── FIX 4 — Nav links: px positions, no % drift ── */
+  /* projects — upper left ON ellipse */
+  .link-projects {
+    top: 495px !important;
+    left: 100px !important;
+    right: unset !important;
+    transform: none !important;
+    z-index: 2 !important;
+  }
+
+  /* Design — lower left, bleeds toward left border */
+  .link-design {
+    top: 572px !important;
+    left: 22px !important;
+    right: unset !important;
+    transform: none !important;
+    z-index: 2 !important;
+  }
+
+  /* Social work — upper right ON ellipse */
+  .link-social {
+    top: 495px !important;
+    right: 80px !important;
+    left: unset !important;
+    transform: none !important;
+    z-index: 2 !important;
+  }
+
+  /* My aspirations — lower right, bleeds toward right border */
+  .link-aspirations {
+    top: 572px !important;
+    right: 4px !important;
+    left: unset !important;
+    transform: none !important;
+    z-index: 2 !important;
+  }
+
+  /* ── FIX 5 — Avatar: large, centered, bleeds bottom, z-index 1 ── */
+  .avatar-wrap {
+    z-index: 1 !important;        /* behind nav links (z:2), above ellipse (z:0) */
+    pointer-events: none !important;
+  }
+}
+
+/* ── MOBILE SPECIFIC LAYOUT OVERRIDES (max-width: 480px) ── */
+@media (max-width: 480px) {
+  /* Enable vertical scrolling on mobile viewport as per Agent rules */
+  body {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+  }
+
+  /* Ticker — never wraps to second row */
+  .ticker-wrap {
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    height: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .mobile-only-ellipse {
+    display: block !important;
+  }
+  .desktop-only-ellipse {
+    display: none !important;
+  }
+  .tablet-only-ellipse {
+    display: none !important;
+  }
+
+  /* Page border — strict top-to-bottom stack */
+  .page-border {
+    position: relative !important;
+    margin: 8px 10px 10px 10px !important;
+    border: 1.5px dashed #bbb !important;
+    height: 850px !important;
+    overflow: hidden !important; /* clips avatar bleed cleanly */
+  }
+
+  /* Calendar — top left (Hidden on mobile) */
+  .calendar-wrap {
+    display: none !important;
+  }
+
+  .calendar {
+    width: 72px !important;
+    border: 1.5px solid #111 !important;
+    border-radius: 6px !important;
+    box-shadow: 2px 2px 0px #111 !important;
+  }
+
+  .cal-header {
+    font-size: 0.55rem !important;
+    padding: 4px 2px !important;
+  }
+
+  .cal-body {
+    padding: 4px !important;
+  }
+
+  .cal-grid {
+    gap: 2px !important;
+    padding: 2px !important;
+  }
+
+  .dot {
+    width: 4px !important;
+    height: 4px !important;
+  }
+
+  /* Name block — top center */
+  .name-block {
+    position: absolute !important;
+    top: 16px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    z-index: 5 !important;
+  }
+
+  .im {
+    font-family: 'Gveret Levin', 'Caveat', cursive !important;
+    font-size: 1.6rem !important;
+    display: block !important;
+    line-height: 1 !important;
+  }
+
+  .bhavesh {
+    font-family: 'Instrument Sans', sans-serif !important;
+    font-weight: 800 !important;
+    font-size: 2.8rem !important;
+    line-height: 1 !important;
+    display: block !important;
+  }
+
+  /* Social icons — centered, own row, NEVER near avatar */
+  .social-icons {
+    position: absolute !important;
+    top: 115px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 14px !important;
+    z-index: 5 !important;
+    bottom: unset !important;
+    right: unset !important;
+    margin: 0 !important;
+  }
+
+  .social-icons img {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 10px !important;
+  }
+
+  /* Ellipse shape + position */
+  .orbit-svg {
+    position: absolute !important;
+    top: 222px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 96vw !important;
+    max-width: 375px !important;
+    height: auto !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+  }
+
+  /* MY STORY button position */
+  .my-story-btn {
+    position: absolute !important;
+    top: 218px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 2 !important;
+    white-space: nowrap !important;
+  }
+
+  .my-story-3d-btn {
+    font-size: 0.55rem !important;
+    padding: 5px 18px !important;
+    letter-spacing: 0.15em !important;
+    height: 28px !important;
+    width: 100px !important;
+  }
+
+  .cover {
+    height: 32px !important;
+    width: 104px !important;
+  }
+
+  /* Nav links positions */
+  .nav-link {
+    font-size: 0.85rem !important;
+    padding: 2px 6px !important;
+  }
+
+  /* projects — upper left */
+  .link-projects {
+    position: absolute !important;
+    top: 292px !important;
+    left: 42px !important;
+    right: unset !important;
+    transform: none !important;
+    z-index: 2 !important;
+  }
+
+  /* Social work — upper right */
+  .link-social {
+    position: absolute !important;
+    top: 292px !important;
+    right: 28px !important;
+    left: unset !important;
+    transform: none !important;
+    z-index: 2 !important;
+  }
+
+  /* Design — lower left, near left border */
+  .link-design {
+    position: absolute !important;
+    top: 352px !important;
+    left: 14px !important;
+    right: unset !important;
+    transform: none !important;
+    z-index: 2 !important;
+  }
+
+  /* My aspirations — lower right, near right border */
+  .link-aspirations {
+    position: absolute !important;
+    top: 352px !important;
+    right: 6px !important;
+    left: unset !important;
+    transform: none !important;
+    z-index: 2 !important;
+  }
+
+  /* Avatar position */
+  .avatar {
+    position: absolute !important;
+    bottom: -110px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 110vw !important;
+    max-width: 490px !important;
+    height: 560px !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+  }
+
+  .avatar-wrap {
+    z-index: 1 !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    top: unset !important;
+    height: 560px !important;
+    width: 100% !important;
+  }
+
+  /* Footer on mobile */
+  .footer-row {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .footer-left {
+    position: absolute !important;
+    bottom: 16px !important;
+    left: 20px !important;
+    font-size: 0.72rem !important;
+    z-index: 5 !important;
+  }
+
+  .footer-right {
+    position: absolute !important;
+    bottom: 16px !important;
+    right: 20px !important;
+    font-size: 0.72rem !important;
+    z-index: 5 !important;
+  }
+
+  /* Hide the dot decoration next to Contact in the footer right so it stays super clean */
+  .footer-right div:last-child {
+    display: none !important;
+  }
+}
