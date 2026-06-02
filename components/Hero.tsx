@@ -30,12 +30,13 @@ function SelectionLink({
 
 export default function Hero() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  const dateStr = "10/02/2023";
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme") as "light" | "dark" || "light";
     setTheme(storedTheme);
     document.documentElement.setAttribute("data-theme", storedTheme);
+    setCurrentDate(new Date());
   }, []);
 
   const toggleTheme = (selectedTheme: "light" | "dark") => {
@@ -43,6 +44,16 @@ export default function Hero() {
     localStorage.setItem("theme", selectedTheme);
     document.documentElement.setAttribute("data-theme", selectedTheme);
   };
+
+  const getFormattedDate = () => {
+    if (!currentDate) return "10/02/2023";
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const year = currentDate.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const currentDay = currentDate ? currentDate.getDate() : 2;
 
   return (
     <section
@@ -94,11 +105,11 @@ export default function Hero() {
       {/* ── CALENDAR (top-left) ── */}
       <div className="calendar-wrap">
         <div className="calendar">
-          <div className="cal-header">{dateStr}</div>
+          <div className="cal-header">{getFormattedDate()}</div>
           <div className="cal-body">
             <div className="cal-grid">
               {Array.from({ length: 31 }).map((_, i) => (
-                <div key={i + 1} className={`dot${i + 1 === 2 ? " today" : ""}`} />
+                <div key={i + 1} className={`dot${i + 1 === currentDay ? " today" : ""}`} />
               ))}
             </div>
           </div>
@@ -191,7 +202,14 @@ export default function Hero() {
       >
         <span className="location footer-left">Gurgaon, India</span>
         <div className="footer-right" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <a href="#contact" className="contact">Contact ↗</a>
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=bhavesh.rout50@gmail.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="contact"
+          >
+            Contact ↗
+          </a>
         </div>
       </div>
 
