@@ -151,7 +151,14 @@ export default function Hero() {
       {/* ── 3D PHYSICAL MY STORY BUTTON ── */}
       <div className="d3warpper my-story-btn">
         <div className="cover">
-          <button className="my-story-3d-btn">my story</button>
+          <button
+            className="my-story-3d-btn"
+            onClick={() => {
+              window.location.href = "/story";
+            }}
+          >
+            my story
+          </button>
         </div>
       </div>
 
